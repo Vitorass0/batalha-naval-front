@@ -5,9 +5,7 @@ export interface UserProfile {
   rankPoints: number;                                                                                                                                                                                                                                                                                   │
   wins: number;                                                                                                                                                                                                                                                                                         │
   losses: number; 
- 
 }
-
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -15,6 +13,12 @@ export interface AuthResponse {
   profile: UserProfile
 }
 
+export interface UserDetails {
+  rankPoints: number;                                                                                                                                                                                                                                                                                   │
+  wins: number;                                                                                                                                                                                                                                                                                         │
+  losses: number;
+  username: string;
+}
 export interface Ship {
   id: string;
   type: string;

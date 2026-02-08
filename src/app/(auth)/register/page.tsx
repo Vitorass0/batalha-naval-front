@@ -132,7 +132,7 @@ export default function RegisterPage() {
       });
 
       // Persist token (UI layer responsibility)
-      setToken(response.token);
+      setToken(response.accessToken);
 
       // Navigate to lobby
       router.push('/lobby');

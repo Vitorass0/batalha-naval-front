@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { string } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -33,4 +34,17 @@ export function removeRefreshToken():void{
 
 export function isAuthenticated(): boolean {
   return !!getToken();
+}
+
+export function getUsername(): string | null {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('username');
+  }
+  return null;
+}
+export function setUsername(username:string): void{
+  localStorage.setItem('username',username)
+}
+export function deleteUsername(): void {
+  localStorage.removeItem('username');
 }

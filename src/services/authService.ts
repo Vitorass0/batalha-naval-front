@@ -11,22 +11,8 @@
  */
 import api from './api';
 import { AuthResponse, UserProfile } from '@/types/api-responses';
+import { LoginInput, RegisterInput } from '@/types/api-requests'; // Importa do novo arquivo
 
-/**
- * Input DTO for user login
- */
-export interface LoginInput {
-  username: string;
-  password: string;
-}
-
-/**
- * Input DTO for user registration
- */
-export interface RegisterInput {
-  username: string;
-  password: string;
-}
 
 /**
  * Pure Authentication API Adapter
@@ -72,7 +58,6 @@ export const authService = {
     const { data } = await api.get<UserProfile>('/Users/profile');
     return data;
   },
-
   /**
    * Validate the current authentication token
    * 
