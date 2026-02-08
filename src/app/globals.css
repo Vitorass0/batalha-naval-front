@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0B1C2D;
+  --foreground: #FFFFFF;
+  
+  /* Naval Design System CSS Variables */
+  --naval-bg: #0B1C2D;
+  --naval-surface: #102A43;
+  --naval-border: #1E293B;
+  --naval-action: #38BDF8;
+  --naval-action-hover: #0EA5E9;
+  --naval-error: #EF4444;
+  --naval-text-primary: #FFFFFF;
+  --naval-text-secondary: #94A3B8;
+  --naval-text-muted: #64748B;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono);
+  
+  /* Naval Colors */
+  --color-naval-bg: var(--naval-bg);
+  --color-naval-surface: var(--naval-surface);
+  --color-naval-border: var(--naval-border);
+  --color-naval-action: var(--naval-action);
+  --color-naval-action-hover: var(--naval-action-hover);
+  --color-naval-error: var(--naval-error);
+  --color-naval-text-primary: var(--naval-text-primary);
+  --color-naval-text-secondary: var(--naval-text-secondary);
+  --color-naval-text-muted: var(--naval-text-muted);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Focus ring utility for accessibility */
+.focus-ring {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--naval-action);
+  ring-offset: 2px;
+  ring-offset-color: var(--naval-bg);
+}
