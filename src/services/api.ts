@@ -6,7 +6,7 @@
  */
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL } from '@/lib/constants';
-import { getToken, removeToken } from '@/lib/utils';
+import { getRefreshToken, getToken, removeRefreshToken, removeToken, setRefreshToken, setToken } from '@/lib/utils';
 
 /**
  * Standardized API error structure
@@ -55,32 +55,59 @@ api.interceptors.request.use(
  * Handles global error scenarios, particularly 401 Unauthorized responses.
  * Maintains SPA architecture by avoiding hard redirects.
  */
+let isRefreshing = false;
+
+
 api.interceptors.response.use(
-  (response) => {
-    // Success path - return response as-is
-    return response;
-  },
-  (error: AxiosError) => {
+  (response) => response,
+  async (error:AxiosError) =>{
+    const originalRequest: any = error.config;
+
+  
     // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      // Clear invalid/expired token
-      removeToken();
-      
-      // TODO: Implement Silent Refresh Token flow here
-      // - Attempt to refresh the access token using a refresh token
-      // - If refresh succeeds, retry the original request
-      // - If refresh fails, emit an auth event for UI to handle redirect
-      
-      // For now, reject with a standardized error
-      const apiError: ApiError = {
-        message: 'Session expired. Please log in again.',
-        status: 401,
-        code: 'UNAUTHORIZED',
-      };
-      
-      return Promise.reject(apiError);
-    }
-    
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+
+      if (isRefreshing) {
+        return Promise.reject(error); //change to queue later
+      }
+
+      originalRequest._retry = true; // Mark refresh
+      isRefreshing = true;
+        
+      try {
+
+        const refreshToken = getRefreshToken();
+
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+          refreshToken: refreshToken
+        });
+
+        setToken(data.accessToken);
+        setRefreshToken(data.refreshToken);
+
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        }
+        return api(originalRequest);
+
+      } catch (refreshError) {
+        //cleans if refresh fails
+        isRefreshing = false;
+        removeToken();
+        removeRefreshToken();
+        
+        // redirect
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+        
+        return Promise.reject(refreshError);
+      }
+  }
     // Handle other errors
     const responseData = error.response?.data as { message?: string } | undefined;
     const apiError: ApiError = {

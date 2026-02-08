@@ -27,5 +27,5 @@ export const FLEET_COMPOSITION = [
   ShipType.DESTROYER,
 ];
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5205';
 export const MATCH_POLLING_INTERVAL = 2000; // 2 segundos

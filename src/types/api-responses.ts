@@ -1,18 +1,18 @@
 // DTOs de retorno da API
 import { GamePhase, GameStatus, ShipOrientation, CellState } from './game-enums';
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  wins: number;
-  losses: number;
-  gamesPlayed: number;
+export interface UserProfile {
+  rankPoints: number;                                                                                                                                                                                                                                                                                   │
+  wins: number;                                                                                                                                                                                                                                                                                         │
+  losses: number; 
+ 
 }
 
 export interface AuthResponse {
-  token: string;
-  user: User;
+  accessToken: string;
+  refreshToken: string;
+  username: string;
+  profile: UserProfile
 }
 
 export interface Ship {

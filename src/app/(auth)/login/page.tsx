@@ -24,10 +24,9 @@ import { setToken } from '@/lib/utils';
 // ============================================================================
 
 const loginSchema = z.object({
-  email: z
+  username: z
     .string()
-    .min(1, 'Email é obrigatório')
-    .email('Digite um email válido'),
+    .min(1, 'Username é obrigatório'),
   password: z
     .string()
     .min(6, 'A senha deve ter pelo menos 6 caracteres'),
@@ -97,7 +96,7 @@ export default function LoginPage() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -109,7 +108,9 @@ export default function LoginPage() {
       const response = await authService.login(data);
       
       // Persist token (UI layer responsibility)
-      setToken(response.token);
+      console.log(response.accessToken)
+      setToken(response.accessToken);
+      
       
       // Navigate to lobby
       router.push('/lobby');
@@ -144,22 +145,22 @@ export default function LoginPage() {
               />
             )}
 
-            {/* Email Field */}
+            {/* username Field */}
             <div className="space-y-2">
               <label
-                htmlFor="email"
+                htmlFor="username"
                 className="block text-sm font-medium text-white"
               >
-                Email
+                Username
               </label>
               <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                autoComplete="email"
-                error={!!errors.email}
-                errorMessage={errors.email?.message}
-                {...register('email')}
+                id="username"
+                type="username"
+                placeholder="Usuario"
+                autoComplete= "username"
+                error={!!errors.username}
+                errorMessage={errors.username?.message}
+                {...register('username')}
               />
             </div>
 
