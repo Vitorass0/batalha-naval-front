@@ -12,11 +12,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useCreateMatchMutation, useJoinMatchMutation } from '@/hooks/queries/useMatchMutations';
+import { useMatchListQuery } from '@/hooks/queries/useMatchQuery';
+import { GameStatus } from '@/types/game-enums';
 
 /**
  * AI Difficulty levels
  */
-export type AIDifficulty = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+export type AIDifficulty = 'Basic' | 'Intermediate' | 'ADVANCED';
 
 interface DifficultyOption {
   value: AIDifficulty;
@@ -27,20 +29,20 @@ interface DifficultyOption {
 
 const difficultyOptions: DifficultyOption[] = [
   {
-    value: 'BASIC',
+    value: 'Basic',
     label: 'Básico',
     description: 'IA com ataques aleatórios. Ideal para iniciantes.',
     icon: '🎯',
   },
   {
-    value: 'INTERMEDIATE',
+    value: 'Intermediate',
     label: 'Intermediário',
     description: 'IA que busca navios após acertos.',
     icon: '🔥',
   },
   {
     value: 'ADVANCED',
-    label: 'Avançado',
+    label: 'Advanced',
     description: 'IA com estratégia de caça otimizada.',
     icon: '⚡',
   },
@@ -50,9 +52,24 @@ export const GameModeSelector: React.FC = () => {
   const router = useRouter();
   const createMatch = useCreateMatchMutation();
   const joinMatch = useJoinMatchMutation();
+  const { data: matches, isLoading: isLoadingMatches } = useMatchListQuery();
+
+  const handleJoinMatch = async (matchId: string) => {
+    try {
+      const match = await joinMatch.mutateAsync(matchId);
+      router.push(`/match/${match.id}`);
+    } catch (error) {
+      console.error('Erro ao entrar na partida:', error);
+    }
+  };
+
+  // Filter available matches (waiting for opponent)
+  const availableMatches = matches?.filter(
+    (match) => match.status === GameStatus.WAITING && !match.player2
+  ) || [];
   
   // PvE State
-  const [selectedDifficulty, setSelectedDifficulty] = useState<AIDifficulty>('BASIC');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<AIDifficulty>('Basic');
   
   // PvP State
   const [opponentId, setOpponentId] = useState('');
@@ -62,14 +79,19 @@ export const GameModeSelector: React.FC = () => {
    * Handle PvE match creation
    */
   const handleStartTraining = async () => {
-    try {
-      // For now, create a regular match (backend can handle AI opponent)
-      const match = await createMatch.mutateAsync();
-      router.push(`/match/${match.id}`);
-    } catch (error) {
-      console.error('Erro ao iniciar treinamento:', error);
-    }
-  };
+  try {
+    // Montamos o DTO específico para treino contra IA
+    const match = await createMatch.mutateAsync({
+      mode: 'Classic',           // Ou 'SOLO', conforme sua API
+      aiDifficulty: selectedDifficulty   // Valor opcional que agora faz sentido
+    });
+    
+    // Redireciona usando o ID retornado
+    router.push(`/match/${match.matchId}`); 
+  } catch (error) {
+    console.error('Erro ao iniciar treinamento:', error);
+  }
+};
 
   /**
    * Handle PvP challenge
@@ -198,6 +220,82 @@ export const GameModeSelector: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+      <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-2xl">🌊</span>
+                Partidas Disponíveis
+              </CardTitle>
+              <CardDescription>
+                Entre em partidas criadas por outros jogadores
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingMatches ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="animate-pulse flex items-center justify-between p-4 border border-naval-border rounded-md"
+                    >
+                      <div className="space-y-2">
+                        <div className="h-4 bg-naval-border rounded w-32" />
+                        <div className="h-3 bg-naval-border rounded w-24" />
+                      </div>
+                      <div className="h-9 bg-naval-border rounded w-20" />
+                    </div>
+                  ))}
+                </div>
+              ) : availableMatches.length > 0 ? (
+                <div className="space-y-3">
+                  {availableMatches.map((match) => (
+                    <div
+                      key={match.id}
+                      className="flex items-center justify-between p-4 border border-naval-border rounded-md bg-naval-bg hover:border-naval-action/50 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <span className="font-semibold text-white">
+                            {match.player1}
+                          </span>
+                          <span className="text-naval-text-muted italic">
+                            aguardando oponente...
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-sm text-naval-text-secondary">
+                          <span className="inline-flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+                            Aguardando
+                          </span>
+                          <span>•</span>
+                          <span className="text-xs">ID: {match.id.slice(0, 8)}...</span>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        onClick={() => handleJoinMatch(match.id)}
+                        isLoading={joinMatch.isPending}
+                        size="sm"
+                      >
+                        Entrar
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-3">🔍</div>
+                  <p className="text-naval-text-secondary">
+                    Nenhuma partida disponível no momento
+                  </p>
+                  <p className="text-sm text-naval-text-muted mt-1">
+                    Crie uma nova partida ou desafie um oponente diretamente
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
     </div>
   );
 };

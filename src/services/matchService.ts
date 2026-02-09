@@ -1,47 +1,54 @@
 // Serviço de partidas (matches)
+import { CreateMatch, SetupMatchRequest } from '@/types/api-requests';
 import api from './api';
 import {
   Match,
   MatchListItem,
+  CreateMatchResponse,
   SetupShipPayload,
   ShootPayload,
   ShootResponse,
 } from '@/types/api-responses';
 
 export const matchService = {
-  // Listar partidas disponíveis
-  async listMatches(): Promise<MatchListItem[]> {
-    const { data } = await api.get<MatchListItem[]>('/matches');
+
+  // Criar nova partida
+  async createMatch(initMatch : CreateMatch): Promise<CreateMatchResponse> {
+    const { data } = await api.post<CreateMatchResponse>('/match',initMatch);
+    return data;
+  },
+  
+   // Posicionar navio durante o setup
+  async placeShip(setup: SetupMatchRequest): Promise<SetupMatchRequest> {
+    const { data } = await api.post<SetupMatchRequest>(`/match/setup`, setup);
     return data;
   },
 
-  // Criar nova partida
-  async createMatch(): Promise<Match> {
-    const { data } = await api.post<Match>('/matches');
+
+
+  // Listar partidas disponíveis
+  async listMatches(): Promise<MatchListItem[]> {
+    const { data } = await api.get<MatchListItem[]>('/match');
     return data;
   },
 
   // Entrar em uma partida existente
   async joinMatch(matchId: string): Promise<Match> {
-    const { data } = await api.post<Match>(`/matches/${matchId}/join`);
+    const { data } = await api.post<Match>(`/match/${matchId}/join`);
     return data;
   },
 
   // Obter detalhes de uma partida
   async getMatch(matchId: string): Promise<Match> {
-    const { data } = await api.get<Match>(`/matches/${matchId}`);
+    const { data } = await api.get<Match>(`/match/${matchId}`);
     return data;
   },
 
-  // Posicionar navio durante o setup
-  async placeShip(matchId: string, ship: SetupShipPayload): Promise<Match> {
-    const { data } = await api.post<Match>(`/matches/${matchId}/setup`, ship);
-    return data;
-  },
+ 
 
   // Confirmar setup (marcar como pronto)
   async confirmSetup(matchId: string): Promise<Match> {
-    const { data } = await api.post<Match>(`/matches/${matchId}/ready`);
+    const { data } = await api.post<Match>(`/match/${matchId}/ready`);
     return data;
   },
 
@@ -56,7 +63,7 @@ export const matchService = {
 
   // Desistir da partida
   async forfeit(matchId: string): Promise<Match> {
-    const { data } = await api.post<Match>(`/matches/${matchId}/forfeit`);
+    const { data } = await api.post<Match>(`/match/${matchId}/forfeit`);
     return data;
   },
 };

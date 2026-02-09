@@ -6,7 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { authService } from '@/services/authService';
-import { UserDetails } from '@/types/api-responses';
+import { LeaderBoardResponse, UserDetails } from '@/types/api-responses';
 
 /**
  * Query key for user profile
@@ -42,7 +42,13 @@ export const useUserProfile = () => {
     retry: 1, // Only retry once for auth failures
   });
 };
-
+export const useLeaderboard = () =>{
+  return useQuery<LeaderBoardResponse[],Error>({
+    queryKey: ['leaderBoard'],
+    queryFn: authService.getLeaderBoard,
+    staleTime: 5 * 60 * 1000,
+  })
+}
 /**
  * Calculate user rank based on wins
  * 

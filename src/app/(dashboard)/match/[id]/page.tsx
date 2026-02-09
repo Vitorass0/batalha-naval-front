@@ -1,7 +1,7 @@
 // Smart Component Orquestrador da Partida
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useMatchQuery } from '@/hooks/queries/useMatchQuery';
 import { GamePhase } from '@/types/game-enums';
@@ -9,43 +9,26 @@ import SetupPhase from './SetupPhase';
 import BattlePhase from './BattlePhase';
 
 export default function MatchPage() {
-  const params = useParams();
-  const matchId = params.id as string;
-  
-  const { data: match, isLoading, error } = useMatchQuery(matchId);
+  const [matchId, setMatchId] = useState<string | null>(null);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-white text-2xl">Carregando partida...</div>
-      </div>
-    );
+  useEffect(() => {
+    // Pegamos o ID que foi gerado no createMatch
+    const id = localStorage.getItem('matchId');
+    setMatchId(id);
+  }, []);
+
+  if (!matchId) {
+    return <div>Identificando partida local...</div>;
   }
 
-  if (error || !match) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-red-400 text-2xl">
-          Erro ao carregar partida. Tente novamente.
-        </div>
-      </div>
-    );
-  }
+  // Como não existe GET, assumimos que se o usuário caiu aqui, 
+  // ele precisa primeiro configurar os navios.
+  // Criamos um objeto de partida "fake" apenas para o SetupPhase não quebrar
+  const localMatch = {
+    id: matchId,
+    phase: GamePhase.SETUP,
+    player1: { username: "Comandante", isReady: false }
+  };
 
-  // Redireciona baseado na fase do jogo
-  if (match.phase === GamePhase.SETUP) {
-    return <SetupPhase match={match} />;
-  }
-
-  if (match.phase === GamePhase.BATTLE || match.phase === GamePhase.FINISHED) {
-    return <BattlePhase match={match} />;
-  }
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="text-white text-2xl">
-        Aguardando início da partida...
-      </div>
-    </div>
-  );
+  return <SetupPhase match={localMatch as any} />;
 }

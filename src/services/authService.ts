@@ -10,7 +10,7 @@
  * - Let the caller (UI components, providers) handle persistence and state management
  */
 import api from './api';
-import { AuthResponse, UserProfile } from '@/types/api-responses';
+import { AuthResponse, LeaderBoardResponse, UserDetails, UserProfile } from '@/types/api-responses';
 import { LoginInput, RegisterInput } from '@/types/api-requests'; // Importa do novo arquivo
 
 
@@ -56,6 +56,10 @@ export const authService = {
    */
   async getProfile(): Promise<UserProfile> {
     const { data } = await api.get<UserProfile>('/Users/profile');
+    return data;
+  },
+  async getLeaderBoard(): Promise<LeaderBoardResponse[]>{
+    const {data} = await api.get<LeaderBoardResponse[]>('/Users/player_stats');
     return data;
   },
   /**

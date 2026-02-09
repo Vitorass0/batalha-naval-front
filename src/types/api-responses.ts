@@ -12,11 +12,23 @@ export interface AuthResponse {
   username: string;
   profile: UserProfile
 }
-
 export interface UserDetails extends UserProfile{
   username: string;
   //colocar total de partidas talvez aq tbm
 }
+export interface LeaderBoardResponse {
+  userId: number,
+  username: string,
+  points: number,
+  wins: number,
+  rank: string
+}
+export interface CreateMatchResponse{
+  matchId:string
+}
+
+//ate aqui ta batendo com o back
+
 export interface Ship {
   id: string;
   type: string;
@@ -61,7 +73,8 @@ export interface MatchListItem {
 }
 
 export interface SetupShipPayload {
-  shipType: string;
+  name: string;
+  size:number;
   orientation: ShipOrientation;
   startRow: number;
   startCol: number;

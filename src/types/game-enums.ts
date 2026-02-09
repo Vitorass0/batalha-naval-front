@@ -8,8 +8,8 @@ export enum CellState {
 }
 
 export enum ShipOrientation {
-  HORIZONTAL = 'HORIZONTAL',
-  VERTICAL = 'VERTICAL',
+  HORIZONTAL = 0,
+  VERTICAL = 1,
 }
 
 export enum GamePhase {
