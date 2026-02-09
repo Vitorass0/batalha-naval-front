@@ -117,7 +117,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
           )}
         </div>
 
-        {/* Grids lado a lado */}
+        {/* Grid lado a lado */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           {/* Radar do Oponente */}
           <div className="flex justify-center">

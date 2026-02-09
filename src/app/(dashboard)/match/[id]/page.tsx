@@ -19,7 +19,7 @@ export default function MatchPage() {
     return <div>Identificando partida local...</div>;
   }
 
- //PLACE HOLDER DE UMA PARTIDA Pois ja foi configurado no front e no back nao existe getmatch, ta sendo armazenado no local storage e sendo enviado a cada requisição( aqui precisa mudar dps)
+ //PLACE HOLDER DE UMA PARTIDA Pois ja foi configurado no front e no back nao existe getmatch, ta sendo armaznado no local storage e sendo enviado a cada requisição( aqui precisa mudar dps)
   const localMatch = {
     id: matchId,
     phase: GameStatus.SETUP,
