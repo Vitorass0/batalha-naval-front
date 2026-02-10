@@ -15,7 +15,6 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { useMatchListQuery } from '@/hooks/queries/useMatchQuery';
 import { useJoinMatchMutation } from '@/hooks/queries/useMatchMutations';
 import { GameStatus } from '@/types/game-enums';
 import { UserStatsCard } from '@/components/lobby/UserStatsCard';
@@ -77,13 +76,9 @@ export default function LobbyPage() {
         <div className='display-flex center gap-10'>
           
           {/* Section Header */}
-          
-
           {/* Game Mode Selector */}
           <GameModeSelector />
           {/* Available Matches List */}
-
-          
           
         </div>
         <div className="lg:col-span-8 space-y-6">

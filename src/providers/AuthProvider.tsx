@@ -78,9 +78,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     removeUsername();
     removeToken();
     removeRefreshToken();
+    localStorage.removeItem('matchId'); 
     document.cookie = "auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     queryClient.clear();
-    router.replace('/login');
+    window.location.href = '/login';
   };
 
   return (
