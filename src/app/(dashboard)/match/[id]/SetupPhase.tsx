@@ -112,7 +112,7 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
         size: SHIP_SIZES[ship.type],
         startX: ship.startCol,
         startY: ship.startRow,
-        orientation: ShipOrientation.HORIZONTAL,
+        orientation: ship.orientation,
       }));
       // 2. Primeiro envia as posições
       console.log(

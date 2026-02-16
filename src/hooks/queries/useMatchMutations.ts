@@ -42,7 +42,7 @@ export const useSetupMatchMutation = () => {
 
       const matchId = localStorage.getItem("matchId");
       if (matchId) {
-        router.push(`/game/${matchId}`);
+        router.push(`/match/${matchId}`);
       }
     },
     onError: (error) => {
