@@ -22,7 +22,7 @@ import {
   useJoinMatchMutation,
 } from "@/hooks/queries/useMatchMutations";
 import { useMatchListQuery } from "@/hooks/queries/useMatchQuery";
-import { GameStatus } from "@/types/game-enums";
+import { MatchStatus } from "@/types/game-enums";
 import {
   Badge,
   Bot,
@@ -87,7 +87,7 @@ export const GameModeSelector: React.FC = () => {
   // Filter available matches (waiting for opponent)
   const availableMatches =
     matches?.filter(
-      (match) => match.status === GameStatus.SETUP && !match.player2, // TODO: tem que ver isso dps
+      (match) => match.status === MatchStatus.SETUP && !match.player2, // TODO: tem que ver isso dps
     ) || [];
 
   // PvE State

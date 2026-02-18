@@ -38,11 +38,11 @@ export const useSetupMatchMutation = () => {
       return matchService.placeShip(requestPayload);
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["match"] });
-
       const matchId = localStorage.getItem("matchId");
+      //invalida a query "match". Isso fará o page.tsx buscar os dados novos,
+      //receber status "InProgress" e trocar o componente visual.
       if (matchId) {
-        router.push(`/game/${matchId}`);
+        queryClient.invalidateQueries({ queryKey: ["match", matchId] });
       }
     },
     onError: (error) => {

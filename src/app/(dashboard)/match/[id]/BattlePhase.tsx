@@ -10,13 +10,13 @@ import { TurnIndicator } from "@/components/game/HUD/TurnIndicator";
 import { FleetStatus } from "@/components/game/HUD/FleetStatus";
 import { GameControls } from "@/components/game/HUD/GameControls";
 import { Button } from "@/components/ui/Button";
+import { MatchStatus, CellState } from "@/types/game-enums";
+import { getToken } from "@/lib/utils";
+import { GRID_SIZE } from "@/lib/constants";
 import {
   useShootMutation,
   useForfeitMutation,
 } from "@/hooks/queries/useMatchMutations";
-import { GameStatus, CellState } from "@/types/game-enums";
-import { getToken } from "@/lib/utils";
-import { GRID_SIZE } from "@/lib/constants";
 
 interface BattlePhaseProps {
   match: Match;
@@ -39,7 +39,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   const opponent = isPlayer1 ? match.player2 : match.player1;
 
   const isMyTurn = match.currentTurn === currentPlayer?.id;
-  const isFinished = match.status === GameStatus.FINISHED;
+  const isFinished = match.status === MatchStatus.FINISHED;
 
   // simplificado -> ainda falta implementar o multiplayer
   const myGrid =

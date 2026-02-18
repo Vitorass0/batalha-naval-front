@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useJoinMatchMutation } from "@/hooks/queries/useMatchMutations";
-import { GameStatus } from "@/types/game-enums";
+import { MatchStatus } from "@/types/game-enums";
 import { UserStatsCard } from "@/components/lobby/UserStatsCard";
 import { GameModeSelector } from "@/components/lobby/GameModeSelector";
 import { LeaderBoardResponse } from "@/types/api-responses";

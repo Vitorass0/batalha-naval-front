@@ -23,10 +23,10 @@ console.log("");
 
 // Test 2: Place a ship
 console.log("✅ Test 2: Place Carrier at (0,0)");
-const placed = store.placeShip(ShipType.DESTROYER, 0, 0);
+const placed = store.placeShip(ShipType.ENCOURACADO, 0, 0);
 console.log("   Placement success:", placed);
-console.log("   Carrier is placed:", store.isShipPlaced(ShipType.DESTROYER));
-const carrier = store.getShip(ShipType.DESTROYER);
+console.log("   Carrier is placed:", store.isShipPlaced(ShipType.ENCOURACADO));
+const carrier = store.getShip(ShipType.ENCOURACADO);
 console.log(
   "   Carrier position:",
   `(${carrier?.startRow}, ${carrier?.startCol})`,
@@ -35,7 +35,7 @@ console.log("");
 
 // Test 3: Invalid placement (out of bounds)
 console.log("✅ Test 3: Try placing Battleship out of bounds (0,9)");
-const invalidPlaced = store.placeShip(ShipType.PORTA_AVIAO, 0, 9);
+const invalidPlaced = store.placeShip(ShipType.PORTA_AVIAO_A, 0, 9);
 console.log("   Placement should fail:", !invalidPlaced);
 console.log("");
 
@@ -47,9 +47,9 @@ console.log("");
 
 // Test 5: Rotation
 console.log("✅ Test 5: Rotate Carrier to vertical");
-const rotated = store.rotateShip(ShipType.PATRULHA);
+const rotated = store.rotateShip(ShipType.ENCOURACADO);
 console.log("   Rotation success:", rotated);
-const rotatedCarrier = store.getShip(ShipType.PATRULHA);
+const rotatedCarrier = store.getShip(ShipType.ENCOURACADO);
 console.log("   New orientation:", rotatedCarrier?.orientation);
 console.log("");
 

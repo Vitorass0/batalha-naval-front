@@ -1,5 +1,5 @@
 // DTOs de retorno da API
-import { GameStatus, ShipOrientation, CellState } from "./game-enums";
+import { MatchStatus, ShipOrientation, CellState } from "./game-enums";
 
 export interface UserProfile {
   rankPoints: number;
@@ -64,17 +64,55 @@ export interface Match {
   player1: Player;
   player2: Player | null;
   currentTurn: string | null;
-  status: GameStatus;
+  status: MatchStatus;
   winner: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CoordinateDto {
+  x: number;
+  y: number;
+  isHit: boolean;
+}
+
+export interface ShipDto {
+  id: string;
+  name: string;
+  size: number;
+  isSunk: boolean;
+  orientation: ShipOrientation;
+  coordinates: CoordinateDto[];
+}
+
+export interface BoardStateDto {
+  grid: CellState[][];
+  ships: ShipDto[];
+}
+
+export interface MatchStatsDto {
+  myHits: number;
+  myConsecutiveHits: number;
+  opponentHits: number;
+  opponentConsecutiveHits: number;
+}
+
+export interface MatchGameState {
+  matchId: string;
+  status: MatchStatus;
+  currentTurnPlayerId: string;
+  isMyTurn: boolean;
+  winnerId?: string | null;
+  myBoard: BoardStateDto;
+  opponentBoard: BoardStateDto;
+  stats: MatchStatsDto;
 }
 
 export interface MatchListItem {
   id: string;
   player1: string;
   player2: string | null;
-  status: GameStatus;
+  status: MatchStatus;
   createdAt: string;
 }
 

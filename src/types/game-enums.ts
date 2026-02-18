@@ -9,17 +9,18 @@ export enum ShipOrientation {
   HORIZONTAL = "Horizontal",
   VERTICAL = "Vertical",
 }
-export enum GameStatus {
+export enum MatchStatus {
   SETUP = "Setup",
-  BATTLE = "InProgress",
+  IN_PROGRESS = "InProgress",
   FINISHED = "Finished",
 }
 export enum ShipType {
-  PORTA_AVIAO = "Porta-Aviões", // 5 células
-  ENCOURACADO = "Encouraçado", // 4 células
-  SUBMARINE = "Submarino", // 3 células
-  DESTROYER = "Destroyer", // 3 células
-  PATRULHA = "Patrulha", // 2 células
+  PORTA_AVIAO_A = "Porta-Aviões Alpha",
+  PORTA_AVIAO_B = "Porta-Aviões Bravo",
+  NAVIO_GUERRA_A = "Navio de Guerra Alpha",
+  NAVIO_GUERRA_B = "Navio de Guerra Bravo",
+  ENCOURACADO = "Encouraçado",
+  SUBMARINO = "Submarino", // 2 células
 }
 
 export type Coordinate = {
