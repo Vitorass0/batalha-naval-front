@@ -40,3 +40,8 @@ export const API_CONFIG = {
   },
 };
 export const MATCH_POLLING_INTERVAL = 2000; // 2 segundos
+
+// Timeout de turno (deve bater com o backend: 31s)
+export const TURN_TIMEOUT_SECONDS = 31;
+// Intervalo de polling do endpoint de timeout (5s, como recomendado pelo backend)
+export const TIMEOUT_CHECK_INTERVAL = 5000;

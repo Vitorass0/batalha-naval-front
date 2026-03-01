@@ -1,7 +1,7 @@
 // Smart Component Orquestrador da Partida
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import SetupPhase from "./SetupPhase";
 import BattlePhase from "./BattlePhase";
 import { useMatchQuery } from "@/hooks/queries/useMatchQuery";
@@ -24,6 +24,14 @@ export default function MatchPage() {
 
   // Busca o estado REAL do servidor
   const { data: gameState, isLoading, error } = useMatchQuery(matchId || "");
+
+  // Rastreia o GUID real do jogador para detecção de vitória/derrota.
+  // Capturado DURANTE o render (não em useEffect) para estar disponível
+  // imediatamente quando adaptGameStateToEntity é chamada no mesmo render.
+  const myPlayerIdRef = useRef<string | null>(null);
+  if (gameState?.isMyTurn && gameState.currentTurnPlayerId) {
+    myPlayerIdRef.current = gameState.currentTurnPlayerId;
+  }
 
   useEffect(() => {
     if (!matchId) {
@@ -58,8 +66,7 @@ export default function MatchPage() {
   }
 
   // Converte o DTO do Back para a estrutura visual esperada
-  // Isso evita refazer todos os componentes visuais agora
-  const matchEntity = adaptGameStateToEntity(gameState);
+  const matchEntity = adaptGameStateToEntity(gameState, myPlayerIdRef.current);
 
   // Lógica de Seleção de Fase
   if (gameState.status === MatchStatus.SETUP) {
@@ -70,24 +77,56 @@ export default function MatchPage() {
     gameState.status === MatchStatus.IN_PROGRESS ||
     gameState.status === MatchStatus.FINISHED
   ) {
-    return <BattlePhase match={matchEntity as any} />;
+    return <BattlePhase match={matchEntity} />;
   }
 
   return <div>Estado desconhecido: {gameState.status}</div>;
 }
 
-function adaptGameStateToEntity(dto: MatchGameState) {
+function adaptGameStateToEntity(
+  dto: MatchGameState,
+  myPlayerId: string | null,
+) {
   const MY_ID = "me";
   const OPPONENT_ID = "opponent";
+
+  // Detecção robusta de vitória com múltiplas estratégias:
+  // 1. Board-based: se todos os navios do oponente afundaram, eu venci (e vice-versa)
+  // 2. GUID comparison: winnerId vs myPlayerId capturado durante o jogo
+  // 3. Fallback: null (indeterminado) — o BattlePhase pode resolver via handleAttack
+  let isWinner: boolean | null = null;
+  if (dto.status === MatchStatus.FINISHED) {
+    // Estratégia 1: Detecção pelo estado dos tabuleiros (mais confiável para vitória por tiro)
+    const opponentShips = dto.opponentBoard?.ships ?? [];
+    const myShips = dto.myBoard?.ships ?? [];
+    const allOpponentShipsSunk =
+      opponentShips.length > 0 && opponentShips.every((s) => s.isSunk);
+    const allMyShipsSunk = myShips.length > 0 && myShips.every((s) => s.isSunk);
+
+    if (allOpponentShipsSunk && !allMyShipsSunk) {
+      isWinner = true;
+    } else if (allMyShipsSunk && !allOpponentShipsSunk) {
+      isWinner = false;
+    } else if (dto.winnerId && myPlayerId) {
+      // Estratégia 2: Comparação de GUID (necessário para timeout/desistência)
+      isWinner = dto.winnerId === myPlayerId;
+    } else if (dto.winnerId) {
+      // Tem vencedor mas não temos nosso ID — indeterminado
+      isWinner = null;
+    } else {
+      // Sem winnerId (empate, erro, etc.)
+      isWinner = null;
+    }
+  }
 
   return {
     id: dto.matchId,
     status: dto.status,
 
-    // Lógica de Turno: Se o back diz que é minha vez, uso meu ID local
     currentTurn: dto.isMyTurn ? MY_ID : OPPONENT_ID,
     currentTurnPlayerId: dto.currentTurnPlayerId,
     winnerId: dto.winnerId,
+    isWinner,
 
     player1: {
       id: MY_ID,
@@ -135,24 +174,40 @@ function fixBoardGrid(rawGrid: any[][]): CellState[][] {
       const rawValue = rawGrid[x][y];
 
       // Converte e Transpõe: fixedGrid[y][x] recebe o valor de rawGrid[x][y]
-      fixedGrid[y][x] = mapIntToCellState(rawValue);
+      fixedGrid[y][x] = mapCellState(rawValue);
     }
   }
 
   return fixedGrid;
 }
 
-function mapIntToCellState(val: number): CellState {
+function mapCellState(val: number | string): CellState {
+  // O Backend usa JsonStringEnumConverter → envia "Water", "Ship", "Hit", "Missed"
+  if (typeof val === "string") {
+    switch (val) {
+      case "Water":
+        return CellState.WATER;
+      case "Ship":
+        return CellState.SHIP;
+      case "Hit":
+        return CellState.HIT;
+      case "Missed":
+        return CellState.MISS;
+      default:
+        return CellState.WATER;
+    }
+  }
+
+  // Fallback para inteiros (caso o backend mude a serialização)
   switch (val) {
     case 0:
-      return CellState.WATER; // 0 = Water
+      return CellState.WATER;
     case 1:
-      return CellState.SHIP; // 1 = Ship
+      return CellState.SHIP;
     case 2:
-      return CellState.HIT; // 2 = Hit (Acertou navio)
+      return CellState.HIT;
     case 3:
-      return CellState.MISS; // 3 = Miss (Errou - Backend pode enviar 3 ou tratar como Water atingida)
-    // Adicione casos extras se o seu backend tiver "Sunk" separado
+      return CellState.MISS;
     default:
       return CellState.WATER;
   }

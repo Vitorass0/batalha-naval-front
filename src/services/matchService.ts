@@ -9,6 +9,7 @@ import {
   ShootPayload,
   ShootResponse,
   MatchGameState,
+  TimeoutCheckResult,
 } from "@/types/api-responses";
 
 export const matchService = {
@@ -74,9 +75,17 @@ export const matchService = {
     return data;
   },
 
-  // Desistir da partida
-  async forfeit(matchId: string): Promise<Match> {
-    const { data } = await api.post<Match>(`/match/${matchId}/forfeit`);
+  // Desistir da partida (usa o endpoint /cancel do backend)
+  // Se InProgress: conta como derrota para quem desistiu. Retorna 204.
+  async forfeit(matchId: string): Promise<void> {
+    await api.post(`/match/${matchId}/cancel`);
+  },
+
+  // Verificar timeout de turno
+  async checkTimeout(matchId: string): Promise<TimeoutCheckResult> {
+    const { data } = await api.post<TimeoutCheckResult>(
+      `/match/${matchId}/timeout`,
+    );
     return data;
   },
 };

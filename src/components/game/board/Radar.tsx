@@ -10,19 +10,25 @@ interface RadarProps {
   opponentGrid: CellState[][];
   onAttack: (row: number, col: number) => void;
   isYourTurn: boolean;
+  isLoading?: boolean;
+  animatingCell?: { row: number; col: number; type: "hit" | "miss" } | null;
 }
 
 export const Radar: React.FC<RadarProps> = ({
   opponentGrid,
   onAttack,
   isYourTurn,
+  isLoading = false,
+  animatingCell = null,
 }) => {
+  const canInteract = isYourTurn && !isLoading;
+
   const handleCellClick = (row: number, col: number) => {
-    if (!isYourTurn) return;
+    if (!canInteract) return;
 
     const cellState = opponentGrid[row][col];
 
-    // Só permite clicar em células não atacadas
+    // Só permite clicar em células não atacadas (Water visível, Ship está mascarada como Water pelo backend)
     if (cellState === CellState.WATER || cellState === CellState.SHIP) {
       onAttack(row, col);
     }
@@ -31,13 +37,21 @@ export const Radar: React.FC<RadarProps> = ({
   return (
     <div className="flex flex-col items-center">
       <h3 className="text-xl font-bold mb-4 text-white">Radar do Oponente</h3>
-      <Grid
-        grid={opponentGrid}
-        onCellClick={handleCellClick}
-        readOnly={!isYourTurn}
-        showShips={false} // Nunca mostra os navios do oponente
-      />
-      {!isYourTurn && (
+      <div className={isLoading ? "opacity-70 pointer-events-none" : ""}>
+        <Grid
+          grid={opponentGrid}
+          onCellClick={handleCellClick}
+          readOnly={!canInteract}
+          showShips={false}
+          animatingCell={animatingCell}
+        />
+      </div>
+      {isLoading && (
+        <p className="mt-4 text-cyan-400 font-semibold animate-pulse">
+          Processando disparo...
+        </p>
+      )}
+      {!isYourTurn && !isLoading && (
         <p className="mt-4 text-yellow-400 font-semibold">
           Aguardando turno do oponente...
         </p>

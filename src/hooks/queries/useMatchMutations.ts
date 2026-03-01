@@ -80,8 +80,12 @@ export const useShootMutation = (matchId: string) => {
 
   return useMutation({
     mutationFn: (shot: ShootPayload) => matchService.shoot(matchId, shot),
-    onSuccess: () => {
-      // Força refetch imediato após disparo
+    onSuccess: (data) => {
+      // Força refetch imediato após disparo para atualizar UI com estado real do servidor
+      queryClient.invalidateQueries({ queryKey: ["match", matchId] });
+    },
+    onError: (error) => {
+      // Refetch para garantir que o estado não ficou inconsistente
       queryClient.invalidateQueries({ queryKey: ["match", matchId] });
     },
   });
@@ -92,8 +96,11 @@ export const useForfeitMutation = (matchId: string) => {
 
   return useMutation({
     mutationFn: () => matchService.forfeit(matchId),
-    onSuccess: (data: Match) => {
-      queryClient.setQueryData(["match", matchId], data);
+    onSuccess: () => {
+      // Cancel retorna 204 — invalida cache para refletir estado final
+      queryClient.invalidateQueries({ queryKey: ["match", matchId] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
     },
   });
 };

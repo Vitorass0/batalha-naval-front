@@ -92,9 +92,11 @@ export interface BoardStateDto {
 
 export interface MatchStatsDto {
   myHits: number;
-  myConsecutiveHits: number;
+  myStreak: number;
+  myMisses: number;
   opponentHits: number;
-  opponentConsecutiveHits: number;
+  opponentStreak: number;
+  opponentMisses: number;
 }
 
 export interface MatchGameState {
@@ -122,9 +124,16 @@ export interface ShootPayload {
 }
 
 export interface ShootResponse {
-  hit: boolean;
-  sunk: boolean;
-  shipType?: string;
-  gameOver: boolean;
-  winner?: string;
+  isHit: boolean;
+  isSunk: boolean;
+  isGameOver: boolean;
+  winnerId: string | null;
+  message: string;
+}
+
+export interface TimeoutCheckResult {
+  turnSwitched: boolean;
+  isGameOver: boolean;
+  winnerId: string | null;
+  message: string | null;
 }
