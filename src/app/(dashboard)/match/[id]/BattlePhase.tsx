@@ -386,7 +386,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 p-8 relative">
+    <div className="min-h-screen bg-slate-950 p-4 md:p-8 relative">
       {/* Toast Container */}
       <ToastContainer messages={messages} onRemove={removeToast} />
 
@@ -416,12 +416,16 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
 
           {/* Stats compactas */}
           {match.stats && (
-            <div className="flex justify-center gap-8 mt-4 text-sm">
-              <div className="text-green-400">
-                Acertos: {match.stats.myHits} | Sequência:{" "}
-                {match.stats.myStreak}
+            <div className="flex justify-center gap-6 mt-4">
+              <div className="px-4 py-1.5 rounded-full bg-emerald-900/30 border border-emerald-700/40 text-emerald-400 text-sm font-mono">
+                🎯 {match.stats.myHits} acertos
               </div>
-              <div className="text-red-400">Erros: {match.stats.myMisses}</div>
+              <div className="px-4 py-1.5 rounded-full bg-amber-900/30 border border-amber-700/40 text-amber-400 text-sm font-mono">
+                ⚡ {match.stats.myStreak} sequência
+              </div>
+              <div className="px-4 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/40 text-slate-400 text-sm font-mono">
+                💨 {match.stats.myMisses} erros
+              </div>
             </div>
           )}
 
@@ -448,17 +452,19 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
               isYourTurn={isMyTurn && !isFinished}
               isLoading={isShooting}
               animatingCell={animatingCell}
+              opponentShips={opponentShips}
             />
           </div>
 
           {/* Meu Tabuleiro + Painel de Movimento */}
           <div className="flex flex-col items-center">
-            <h3 className="text-xl font-bold mb-4 text-white">Seu Tabuleiro</h3>
+            <h3 className="text-xl font-bold mb-4 text-slate-300 uppercase tracking-widest">⚓ Seu Tabuleiro</h3>
             <Grid
               grid={myGrid}
               readOnly={true}
               showShips={true}
               highlightedCells={highlightedCells}
+              ships={myShips}
             />
 
             {/* ── Painel de Movimento (Modo Dinâmico) ────────────────────── */}

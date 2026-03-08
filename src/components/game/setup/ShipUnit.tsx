@@ -83,7 +83,7 @@ export const ShipUnit: React.FC<ShipUnitProps> = ({
         src={SHIP_IMAGES[type]}
         alt={config.label}
         draggable={false}
-        style={imgStyle}
+        style={{ ...imgStyle, mixBlendMode: "multiply" }}
       />
     </div>
   );
