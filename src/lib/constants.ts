@@ -31,7 +31,7 @@ export const FLEET_COMPOSITION = [
 ];
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||"http://localhost:5205";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5205";
 export const API_CONFIG = {
   baseURL: API_BASE_URL,
   withCredentials: true,
