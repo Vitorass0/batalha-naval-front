@@ -33,6 +33,14 @@ export const useMatchListQuery = () => {
   });
 };
 
+export const useInvitesQuery = () => {
+  return useQuery({
+    queryKey: ["matchInvites"],
+    queryFn: () => matchService.getInvites(),
+    refetchInterval: 5000, // Polling a cada 5s para detectar convites novos
+  });
+};
+
 export const useProfileQuery = () => {
   return useQuery({
     queryKey: ["profile"],

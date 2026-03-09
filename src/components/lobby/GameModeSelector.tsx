@@ -21,7 +21,7 @@ import {
   useCreateMatchMutation,
   useJoinMatchMutation,
 } from "@/hooks/queries/useMatchMutations";
-import { useMatchListQuery } from "@/hooks/queries/useMatchQuery";
+import { useMatchListQuery, useInvitesQuery } from "@/hooks/queries/useMatchQuery";
 import {
   useCampaignProgressQuery,
   useCancelCampaignMutation,
@@ -111,6 +111,7 @@ export const GameModeSelector: React.FC = () => {
   const cancelCampaign = useCancelCampaignMutation();
   const joinMatch = useJoinMatchMutation();
   const { data: matches, isLoading: isLoadingMatches } = useMatchListQuery();
+  const { data: invites } = useInvitesQuery();
 
   //modo campanha
   const { data: campaignProgress, isLoading: isLoadingCampaign } =
@@ -597,6 +598,68 @@ export const GameModeSelector: React.FC = () => {
               </span>
             </div>
           </div>
+
+          {/* Auto-detected Invites */}
+          {invites && invites.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-emerald-400 flex items-center gap-1.5">
+                <Swords className="w-3.5 h-3.5" />
+                Convites Pendentes ({invites.length})
+              </p>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {invites.map((invite) => (
+                  <div
+                    key={invite.matchId}
+                    className="flex items-center justify-between p-3 rounded-xl border border-emerald-800/40 bg-emerald-950/20 hover:bg-emerald-950/30 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">
+                        {invite.inviterName}{" "}
+                        <span className="text-slate-400 font-normal">
+                          te desafiou!
+                        </span>
+                      </p>
+                      <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                        {invite.mode === "Dynamic" ? (
+                          <Ship className="w-3 h-3 text-purple-400" />
+                        ) : (
+                          <Anchor className="w-3 h-3 text-cyan-400" />
+                        )}
+                        Modo:{" "}
+                        <span
+                          className={cn(
+                            "font-medium",
+                            invite.mode === "Dynamic"
+                              ? "text-purple-400"
+                              : "text-cyan-400",
+                          )}
+                        >
+                          {invite.mode === "Dynamic" ? "Din\u00e2mico" : "Cl\u00e1ssico"}
+                        </span>
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="ml-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                      onClick={() => {
+                        localStorage.setItem("matchId", invite.matchId);
+                        if (invite.mode === "Dynamic") {
+                          localStorage.setItem(
+                            `gameMode_${invite.matchId}`,
+                            "Dynamic",
+                          );
+                        }
+                        router.push(`/match/${invite.matchId}`);
+                      }}
+                    >
+                      <Gamepad2 className="w-4 h-4 mr-1" />
+                      Aceitar
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Accept Invite — Match ID */}
           <div className="space-y-2">

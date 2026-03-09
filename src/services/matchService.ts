@@ -14,6 +14,7 @@ import {
   ShootResponse,
   MatchGameState,
   TimeoutCheckResult,
+  MatchInviteDto,
 } from "@/types/api-responses";
 
 export const matchService = {
@@ -116,6 +117,12 @@ export const matchService = {
     const { data } = await api.post<TimeoutCheckResult>(
       `/match/${matchId}/timeout`,
     );
+    return data;
+  },
+
+  // Listar convites PvP pendentes
+  async getInvites(): Promise<MatchInviteDto[]> {
+    const { data } = await api.get<MatchInviteDto[]>("/match/invites");
     return data;
   },
 };

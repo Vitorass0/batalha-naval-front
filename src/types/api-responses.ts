@@ -159,3 +159,10 @@ export interface MatchHistoryItem {
   playedAt: string;
   duration: string | null;
 }
+
+export interface MatchInviteDto {
+  matchId: string;
+  inviterName: string;
+  mode: "Classic" | "Dynamic";
+  createdAt: string;
+}
